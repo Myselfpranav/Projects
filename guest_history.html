@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Historical Run Registries</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background: #0f172a; color: #e2e8f0; } 
+        .panel-box { background: #1e293b; border: 1px solid #334155; border-radius: 12px; }
+        .table-custom { background: #111827 !important; border-radius: 8px; overflow: hidden; }
+        .table-custom th { background: #1e293b !important; color: #94a3b8 !important; border-bottom: 1px solid #334155 !important; }
+        .table-custom td { border-bottom: 1px solid #1e293b !important; vertical-align: middle; }
+        .code-preview { font-family: monospace; max-width: 320px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #38bdf8; }
+    </style>
+</head>
+<body>
+    <div class="container py-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h4 class="m-0">📜 Code Scan Run Registries</h4>
+                <small class="text-muted">Historical assessment index for user: <span class="text-warning">{{ user_name }}</span></small>
+            </div>
+            <div class="d-flex gap-2">
+                <a href="/dashboard" class="btn btn-outline-info btn-sm">📊 View Dashboard Metrics</a>
+                <a href="/editor" class="btn btn-info text-white btn-sm fw-bold">💻 Core Editor Workspace</a>
+            </div>
+        </div>
+
+        <div class="panel-box p-4">
+            <h6 class="text-muted small text-uppercase mb-3">Stored Audit Executions Matrix</h6>
+            
+            {% if history_records %}
+            <div class="table-responsive table-custom">
+                <table class="table table-dark table-striped m-0">
+                    <thead>
+                        <tr>
+                            <th class="ps-3">Execution ID</th>
+                            <th>Timestamp</th>
+                            <th>Code Snippet Preview</th>
+                            <th>Security Score</th>
+                            <th class="text-end pe-3">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for record in history_records %}
+                        <tr>
+                            <td class="font-monospace text-muted ps-3">#RUN-00{{ loop.index }}</td>
+                            <td class="small">{{ record.timestamp }}</td>
+                            <td>
+                                <div class="code-preview small bg-black p-2 rounded border border-secondary">
+                                    {{ record.code_snippet }}
+                                </div>
+                            </td>
+                            <td>
+                                <span class="fw-bold {% if record.score >= 85 %}text-success{% elif record.score >= 70 %}text-warning{% else %}text-danger{% endif %}">
+                                    {{ record.score }}%
+                                </span>
+                            </td>
+                            <td class="text-end pe-3">
+                                {% if record.score >= 75 %}
+                                <span class="badge bg-success-subtle text-success border border-success">PASSED</span>
+                                {% else %}
+                                <span class="badge bg-danger-subtle text-danger border border-danger">RISK FOUND</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5 border border-dashed border-secondary rounded">
+                <span style="font-size: 2rem;">📭</span>
+                <p class="text-muted mt-2 mb-0 small">No execution history found. Run a new code scan inside the Workspace Editor to register entries.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
